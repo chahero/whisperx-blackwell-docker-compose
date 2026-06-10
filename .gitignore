@@ -43,6 +43,7 @@ Thumbs.db
 *.mp3
 *.wav
 *.json
+.env
 *.md
 !README.md
 !LICENSE

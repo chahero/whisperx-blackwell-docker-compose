@@ -1,0 +1,20 @@
+services:
+  whisperx:
+    container_name: whisperx-gpu
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: whisperx-blackwell:latest
+    ports:
+      - "${WHISPERX_PORT:-8003}:8003"
+    environment:
+      HF_TOKEN: ${HF_TOKEN:?HF_TOKEN is required}
+      HF_HOME: /models/huggingface
+    volumes:
+      - huggingface-cache:/models/huggingface
+    ipc: host
+    restart: unless-stopped
+    gpus: all
+
+volumes:
+  huggingface-cache:

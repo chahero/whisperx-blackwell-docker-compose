@@ -1,6 +1,9 @@
 # WhisperX on NVIDIA Blackwell (DGX Spark / GB10 / GB200)
 
-🐳 **Docker Image:** `docker pull mekopa/whisperx-blackwell:latest`
+> This fork is based on [`mekopa/whisperx-blackwell`](https://github.com/mekopa/whisperx-blackwell) and adds a Docker Compose setup for easier local GPU deployment.
+> The core Blackwell patch and application code come from the upstream project.
+
+🐳 **Upstream Docker Image:** `docker pull mekopa/whisperx-blackwell:latest`
 
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/mekopa/whisperx-blackwell)
 
@@ -39,7 +42,46 @@ This repository contains the **"Blackwell Bridge Patch"** - a surgical Dockerfil
 
 ## Quick Start
 
-### Option 1: Pre-built Docker Image (Recommended)
+### Option 1: Docker Compose (Recommended for this fork)
+
+```bash
+# Clone the repo
+git clone https://github.com/chahero/whisperx-blackwell-docker-compose.git
+cd whisperx-blackwell-docker-compose
+
+# Create your environment file
+cp .env.example .env
+
+# Edit .env and set your Hugging Face token
+# HF_TOKEN=your_huggingface_token
+
+# Build and start the service
+docker compose up -d --build
+```
+
+The compose setup includes:
+- Local build from `Dockerfile.gpu`
+- GPU access via `gpus: all`
+- Port mapping with `WHISPERX_PORT` (defaults to `8003`)
+- Persistent Hugging Face cache in a named Docker volume
+
+To stop the service:
+
+```bash
+docker compose down
+```
+
+To view logs:
+
+```bash
+docker compose logs -f whisperx
+```
+
+**Windows note:** Docker Desktop must be configured with WSL2 + NVIDIA GPU support. If `gpus: all` is not recognized by your Compose plugin, update Docker Desktop / Compose to a recent version.
+
+**Get your HF token:** https://huggingface.co/settings/tokens (needed for pyannote speaker diarization)
+
+### Option 2: Upstream Pre-built Docker Image
 
 ```bash
 # Pull the image
@@ -56,14 +98,12 @@ docker run -d \
   mekopa/whisperx-blackwell:latest
 ```
 
-**Get your HF token:** https://huggingface.co/settings/tokens (needed for pyannote speaker diarization)
-
-### Option 2: Build from Source
+### Option 3: Build from Source Without Compose
 
 ```bash
 # Clone the repo
-git clone https://github.com/mekopa/whisperx-blackwell.git
-cd whisperx-blackwell
+git clone https://github.com/chahero/whisperx-blackwell-docker-compose.git
+cd whisperx-blackwell-docker-compose
 
 # Build the image
 docker build -f Dockerfile.gpu -t whisperx-blackwell:latest .
@@ -79,6 +119,8 @@ docker run -d \
 ```
 
 ## Usage
+
+If you started the service with Docker Compose, the API is still exposed on `http://localhost:8003` by default, or on the port set via `WHISPERX_PORT` in `.env`.
 
 ### Health Check
 
@@ -226,4 +268,4 @@ MIT License - Free to use, modify, and distribute.
 
 ---
 
-**Need help?** Open an issue or check the [Discussions](https://github.com/mekopa/whisperx-blackwell/discussions) tab.
+**Need help?** Open an issue in this fork for Docker Compose setup, or check the upstream [Discussions](https://github.com/mekopa/whisperx-blackwell/discussions) tab for Blackwell patch details.
